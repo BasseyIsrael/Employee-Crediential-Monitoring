@@ -1,0 +1,11 @@
+let
+    Source = Csv.Document(File.Contents("C:\Users\HP\Desktop\Work\Excel\Excell\Data Analyst\Employee credential\employee information.csv"),[Delimiter=",", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}, {"Column2", type text}, {"Column3", type text}, {"Column4", type text}, {"Column5", type text}, {"Column6", type text}, {"Column7", type text}, {"Column8", type text}}),
+    #"Promoted Headers" = Table.PromoteHeaders(#"Changed Type", [PromoteAllScalars=true]),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Promoted Headers",{{"first_name", type text}, {"last_name", type text}, {"email", type text}, {"employee type", type text}, {"assigned project", type text}, {"position", type text}, {"work mode", type text}, {"last in", type text}}),
+    #"Filtered Rows" = Table.SelectRows(#"Changed Type1", each true),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Filtered Rows",{{"last in", type text}}),
+    #"Removed Blank Rows" = Table.SelectRows(#"Changed Type2", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+    #"Removed Blank Rows1" = Table.SelectRows(#"Removed Blank Rows", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null})))
+in
+    #"Removed Blank Rows1"
